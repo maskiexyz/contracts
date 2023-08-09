@@ -59,9 +59,15 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
     }
 
     function mint(uint256 id, address _creator, address _owner, uint256 price) public onlyOwner {
-        require(IERC20(usdcAddress).transferFrom(_owner, _creator, price), "Payment failed!");
+        uint256 protocolFee = (price * protocolFeePercentage) / 100;
+        uint256 creatorPayment = price - protocolFee;
+
+        require(IERC20(usdcAddress).transferFrom(_owner, protocolFeeAddress, protocolFee), "Protocol fee transfer failed!");
+        require(IERC20(usdcAddress).transferFrom(_owner, _creator, creatorPayment), "Payment to creator failed!");
+
         _mint(_owner, id);
         creator[id] = _creator;
+
         emit MaskieMinted(id, _creator, _owner, price);
     }
 
