@@ -3,14 +3,9 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
-    using CountersUpgradeable for CountersUpgradeable.Counter;
-    CountersUpgradeable.Counter private _tokenIds;
-
     string public baseURI;
     address public usdcAddress;
     mapping(uint256 => address) public creator;
