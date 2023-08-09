@@ -23,6 +23,7 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
 
     event MaskieMinted(uint256 indexed tokenId, address indexed creator, address indexed owner, uint256 price);
     event MaskieBought(address previousOwner, address newOwner, uint256 price);
+    event RewardsDistributed(address indexed to, uint256 amount);
 
     function initialize(address _protocolFeeAddress, address _distributionFeeAddress, string memory _baseURI, address _usdcAddress) public initializer {
         __ERC721_init("Maskie", "MASK");
@@ -90,6 +91,7 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
         
         for (uint256 i = 0; i < recipients.length; i++) {
             require(IERC20(usdcAddress).transferFrom(distributionFeeAddress, recipients[i], amounts[i]), "Reward distribution failed");
+            emit RewardsDistributed(recipients[i], amounts[i]);
         }
     }
 
