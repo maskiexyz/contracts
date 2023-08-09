@@ -13,8 +13,8 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
     address public protocolFeeAddress;
     address public distributionFeeAddress;
 
-    uint256 public protocolFeePercentage = 5;  // default to 5%
-    uint256 public distributionFeePercentage = 10; // default to 10%
+    uint256 public protocolFeePercentage;  // default to 5%
+    uint256 public distributionFeePercentage; // default to 10%
 
     event MaskieMinted(uint256 indexed tokenId, address indexed creator, address indexed owner, uint256 price);
     event MaskieBought(address previousOwner, address newOwner, uint256 price);
@@ -28,6 +28,9 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
         distributionFeeAddress = _distributionFeeAddress;
         baseURI = _baseURI;
         usdcAddress = _usdcAddress;
+
+        protocolFeePercentage = 5;
+        distributionFeePercentage = 10;
     }
 
     function setBaseURI(string memory _newBaseURI) external onlyOwner {
