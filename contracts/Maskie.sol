@@ -92,7 +92,7 @@ contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
         emit MaskieBought(tokenId, previousOwner, newOwner, price);
     }
 
-    function distributeRewards(address[] memory recipients, uint256[] memory amounts) external onlyOwner {
+    function distribute(address[] memory recipients, uint256[] memory amounts) external onlyOwner {
         require(recipients.length == amounts.length, "Mismatched input arrays");
         
         for (uint256 i = 0; i < recipients.length; i++) {
