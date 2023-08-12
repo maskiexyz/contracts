@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
+contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
     string public baseURI;
     address public usdcAddress;
     mapping(uint256 => address) public creator;
@@ -17,17 +17,17 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
     uint256 public distributionFeePercentage; // default to 10%
 
     event MaskieMinted(uint256 indexed tokenId, address indexed creator, address indexed owner, uint256 price);
-    event MaskieBought(address previousOwner, address newOwner, uint256 price);
+    event MaskieBought(uint256 indexed tokenId, address previousOwner, address newOwner, uint256 price);
     event RewardsDistributed(address indexed to, uint256 amount);
 
-    function initialize(address _protocolFeeAddress, address _distributionFeeAddress, string memory _baseURI, address _usdcAddress) public initializer {
+    function initialize() public initializer {
         __ERC721_init("Maskie", "MASK");
-        __Ownable_init();
+        __Ownable_init_unchained();
 
-        protocolFeeAddress = _protocolFeeAddress;
-        distributionFeeAddress = _distributionFeeAddress;
-        baseURI = _baseURI;
-        usdcAddress = _usdcAddress;
+        protocolFeeAddress = "0xe5f4C397AEC7c27Dc5B924D3fe85f0cceFd45917";
+        distributionFeeAddress = "0xe5f4C397AEC7c27Dc5B924D3fe85f0cceFd45917";
+        baseURI = "https://uri.maskie.xyz/";
+        usdcAddress = "0xE0A80f7e153a7615E1c1a664dc4E0F6AA329df7f";
 
         protocolFeePercentage = 5;
         distributionFeePercentage = 10;
@@ -38,6 +38,7 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
     }
 
     function setUsdcAddress(address _usdcAddress) external onlyOwner {
+        require(_usdcAddress != address(0), "Invalid address");
         usdcAddress = _usdcAddress;
     }
 
@@ -61,7 +62,7 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
         distributionFeePercentage = _percentage;
     }
 
-    function mint(uint256 id, address _creator, address _owner, uint256 price) public onlyOwner {
+    function mint(uint256 id, address _creator, address _owner, uint256 price) external onlyOwner {
         uint256 protocolFee = (price * protocolFeePercentage) / 100;
         uint256 creatorPayment = price - protocolFee;
 
@@ -75,6 +76,7 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
     }
 
     function buy(uint256 tokenId, uint256 price, address newOwner) external onlyOwner {
+        require(_ownerOf[tokenId] != address(0), 'Token does not exist');
         address previousOwner = ownerOf(tokenId);
 
         uint256 protocolFee = (price * protocolFeePercentage) / 100;
@@ -87,7 +89,7 @@ contract Maskie is ERC721Upgradeable, OwnableUpgradeable {
 
         _transfer(previousOwner, newOwner, tokenId);
 
-        emit MaskieBought(previousOwner, newOwner, price);
+        emit MaskieBought(tokenId, previousOwner, newOwner, price);
     }
 
     function distributeRewards(address[] memory recipients, uint256[] memory amounts) external onlyOwner {
