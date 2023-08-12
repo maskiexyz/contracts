@@ -3,9 +3,12 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
+    using Strings for uint256;
+
     string public baseURI;
     address public usdcAddress;
     mapping(uint256 => address) public creator;
@@ -23,11 +26,6 @@ contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
     function initialize() public initializer {
         __ERC721_init("Maskie", "MASK");
         __Ownable_init_unchained();
-
-        protocolFeeAddress = "0xe5f4C397AEC7c27Dc5B924D3fe85f0cceFd45917";
-        distributionFeeAddress = "0xe5f4C397AEC7c27Dc5B924D3fe85f0cceFd45917";
-        baseURI = "https://uri.maskie.xyz/";
-        usdcAddress = "0xE0A80f7e153a7615E1c1a664dc4E0F6AA329df7f";
 
         protocolFeePercentage = 5;
         distributionFeePercentage = 10;
@@ -80,8 +78,8 @@ contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
     }
 
     function buy(uint256 tokenId, uint256 price, address newOwner) external onlyOwner {
-        require(_ownerOf[tokenId] != address(0), 'Token does not exist');
         address previousOwner = ownerOf(tokenId);
+        require(previousOwner != address(0), 'Token does not exist');
 
         uint256 protocolFee = (price * protocolFeePercentage) / 100;
         uint256 distributionFee = (price * distributionFeePercentage) / 100;
