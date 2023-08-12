@@ -37,6 +37,10 @@ contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
         baseURI = _newBaseURI;
     }
 
+    function tokenURI(uint256 id) public view virtual override returns (string memory) {
+        return string(abi.encodePacked(baseURI, id.toString()));
+    }
+
     function setUsdcAddress(address _usdcAddress) external onlyOwner {
         require(_usdcAddress != address(0), "Invalid address");
         usdcAddress = _usdcAddress;
