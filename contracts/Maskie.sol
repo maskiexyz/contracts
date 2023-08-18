@@ -77,21 +77,21 @@ contract Maskie is OwnableUpgradeable, ERC721Upgradeable {
         emit MaskieMinted(id, _creator, _owner, price);
     }
 
-    function buy(uint256 tokenId, uint256 price, address newOwner) external onlyOwner {
-        address previousOwner = ownerOf(tokenId);
+    function buy(uint256 id, uint256 price, address _newOwner) external onlyOwner {
+        address previousOwner = ownerOf(id);
         require(previousOwner != address(0), 'Token does not exist');
 
         uint256 protocolFee = (price * protocolFeePercentage) / 100;
         uint256 distributionFee = (price * distributionFeePercentage) / 100;
         uint256 ownerPayment = price - protocolFee - distributionFee;
 
-        require(IERC20(usdcAddress).transferFrom(newOwner, previousOwner, ownerPayment), "Payment to previous owner failed");
-        require(IERC20(usdcAddress).transferFrom(newOwner, protocolFeeAddress, protocolFee), "Protocol fee transfer failed");
-        require(IERC20(usdcAddress).transferFrom(newOwner, distributionFeeAddress, distributionFee), "Distribution fee transfer failed");
+        require(IERC20(usdcAddress).transferFrom(_newOwner, previousOwner, ownerPayment), "Payment to previous owner failed");
+        require(IERC20(usdcAddress).transferFrom(_newOwner, protocolFeeAddress, protocolFee), "Protocol fee transfer failed");
+        require(IERC20(usdcAddress).transferFrom(_newOwner, distributionFeeAddress, distributionFee), "Distribution fee transfer failed");
 
-        _transfer(previousOwner, newOwner, tokenId);
+        _transfer(previousOwner, _newOwner, id);
 
-        emit MaskieBought(tokenId, previousOwner, newOwner, price);
+        emit MaskieBought(id, previousOwner, _newOwner, price);
     }
 
     function distribute(address[] memory recipients, uint256[] memory amounts) external onlyOwner {
